@@ -1,5 +1,6 @@
 # calendar.py
 
+import sys
 from datetime import datetime, timedelta, date
 
 # Meeus/Jones/Butcher algorithm for computing the date for Easter Sunday for a given year
@@ -73,7 +74,7 @@ def compute_baptism(year):
 # Ordinary time begins the day after the Baptism of the Lord
 def compute_ordinary(year):
     baptism = compute_baptism(year)
-    ordinary = baptism + timedelta(days=1)
+    ordinary = baptism + timedelta(days = 1)
     return ordinary
 
 # Compute the liturgical year for a given date
@@ -87,36 +88,56 @@ def compute_liturgical_year(date):
 # Compute the liturgical season for a given date
 def compute_liturgical_season(date):
     year = compute_liturgical_year(date)
-    last_year = year - 1
-    last_advent = compute_advent(last_year)
-    advent = compute_advent(year)
-    last_christmas = compute_christmas(last_year)
-    christmas = compute_christmas(year)
-    baptism = compute_baptism(year)
-    ordinary = compute_ordinary(year)
-    ash_wednesday = compute_ash_wednesday(year)
-    holy_thursday = compute_holy_thursday(year)
-    easter = compute_easter(year)
-    pentecost = compute_pentecost(year)
-    if date >= last_advent and date < last_christmas:
+    if date >= compute_advent(year - 1) and date < compute_christmas(year - 1):
         return "Advent"
-    elif date >= last_christmas and date <= baptism:
+    elif date >= compute_christmas(year - 1) and date <= compute_baptism(year):
         return "Christmas"
-    elif date >= ordinary and date < ash_wednesday:
-        return "Ordinary Time I"
-    elif date >= ash_wednesday and date < holy_thursday:
+    elif date >= compute_ordinary(year) and date < compute_ash_wednesday(year):
+        return "Ordinary Time"
+    elif date >= compute_ash_wednesday(year) and date < compute_holy_thursday(year):
         return "Lent"
-    elif date >= holy_thursday and date < easter:
+    elif date >= compute_holy_thursday(year) and date < compute_easter(year):
         return "Triduum"
-    elif date >= easter and date <= pentecost:
+    elif date >= compute_easter(year) and date <= compute_pentecost(year):
         return "Easter"
-    elif date > pentecost and date < advent:
-        return "Ordinary Time II"
+    elif date > compute_pentecost(year) and date < compute_advent(year):
+        return "Ordinary Time"
     else:
-        return "Unknown"
-    
-date = datetime(2025, 1, 1).date()
-while date.year < 2026:
-    print(date, compute_liturgical_season(date))
-    date += timedelta(days=1)
+        return "unknown season"
+
+# Compute the Sunday cycle (A/B/C)
+def compute_sunday_cycle(date):
+    year = compute_liturgical_year(date)
+    if (year % 3 == 1):
+        return "A"
+    elif (year % 3 == 2):
+        return "B"
+    elif (year % 3 == 0):
+        return "C"
+    else:
+        return "unknown sunday cycle"
+
+# Compute the weekday cycle (I/II)
+def compute_weekday_cycle(date):
+    year = date.year
+    if (year % 2 == 1):
+        return "I"
+    elif (year % 2 == 0):
+        return "II"
+    else:
+        return "unknown weekday cycle"
+
+# Prints a helpful message
+def print_help():
+    print("this daily-missal-server.\nYou are probably looking for daily-missal-client, but")
+    print("that's ok. example use: daily-missal-server 01-06-2025")
+
+# Main
+date = date.today()
+print(date)
+print(compute_liturgical_season(date))
+if date.weekday() == 6:
+    print(compute_sunday_cycle(date))
+else:
+    print(compute_weekday_cycle(date))
 
