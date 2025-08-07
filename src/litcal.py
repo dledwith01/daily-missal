@@ -2,14 +2,13 @@ import requests
 from parser import handle_json
 from datetime import datetime, date
 
-date = date.today()
+def fetch_calendar_today(date):
+    url = "https://litcal.johnromanodorazio.com/api/dev/calendar/nation/US?year_type=CIVIL"
+    headers = {
+    "accept": "application/json",
+    "Accept-Language": "en_US"
+    }
 
-url = "https://litcal.johnromanodorazio.com/api/dev/calendar/nation/US?year_type=CIVIL"
-headers = {
-  "accept": "application/json",
-  "Accept-Language": "en_US"
-}
-
-response = requests.request("GET", url, headers=headers)
-data = response.json()
-handle_json(date, data)
+    response = requests.request("GET", url, headers=headers)
+    data = response.json()
+    handle_json(date, data)
