@@ -133,7 +133,6 @@ def print_help():
     print("that's ok. example use: daily-missal-server 01-06-2025")
 
 # Main
-date = date.today()
 print(date)
 print(compute_liturgical_season(date))
 if date.weekday() == 6:
